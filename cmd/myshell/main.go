@@ -22,16 +22,7 @@ func main() {
 
 		cmd := getCmd(reader)
 
-		switch cmd.input {
-		case "exit":
-			if cmd.args[0] == "0" {
-				os.Exit(0)
-			}
-		case "echo":
-			output(strings.Join(cmd.args, " "))
-		default:
-			output(fmt.Sprintf("%s: command not found", cmd.input))
-		}
+		cmd.exec()
 	}
 }
 
@@ -60,4 +51,34 @@ func getCmd(reader *bufio.Reader) *Command {
 		cmd,
 		args,
 	}
+}
+
+func (cmd *Command) exec() {
+
+	switch cmd.input {
+	case "exit":
+		if cmd.args[0] == "0" {
+			os.Exit(0)
+		}
+	case "echo":
+		output(strings.Join(cmd.args, " "))
+	case "type":
+		output(typedCmd(cmd.args[0]))
+	default:
+		output(fmt.Sprintf("%s: command not found", cmd.input))
+	}
+}
+
+func typedCmd(cmd string) string {
+
+	switch cmd {
+	case "echo":
+		return "echo is a shell builtin"
+	case "exit":
+		return "exit is a shell builtin"
+	case "type":
+		return "type is a shell builtin"
+	}
+
+	return fmt.Sprintf("%s: not found", cmd)
 }

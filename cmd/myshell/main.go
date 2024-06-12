@@ -9,21 +9,34 @@ import (
 
 func main() {
 
-	// Uncomment this block to pass the first stage
-	fmt.Fprint(os.Stdout, "$ ")
+	reader := bufio.NewReader(os.Stdin)
 
-	// Wait for user input
-	input, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+	for {
 
-	// Rimuove lo spazio finale
-	command := strings.TrimSuffix(input, "\n")
+		clean()
 
-	switch command {
-	default:
-		output(fmt.Sprintf("%s: command not found\n", command))
+		cmd := getCmd(reader)
+
+		switch cmd {
+		default:
+			output(fmt.Sprintf("%s: command not found\n", cmd))
+		}
 	}
 }
 
 func output(message string) {
 	fmt.Fprint(os.Stdout, message)
+}
+
+func clean() {
+	fmt.Fprint(os.Stdout, "$ ")
+}
+
+func getCmd(reader *bufio.Reader) string {
+
+	// Wait for user input
+	input, _ := reader.ReadString('\n')
+
+	// Rimuove lo spazio finale
+	return strings.TrimSuffix(input, "\n")
 }

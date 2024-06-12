@@ -27,14 +27,16 @@ func main() {
 			if cmd.args[0] == "0" {
 				os.Exit(0)
 			}
+		case "echo":
+			output(strings.Join(cmd.args, " "))
 		default:
-			output(fmt.Sprintf("%s: command not found\n", cmd.input))
+			output(fmt.Sprintf("%s: command not found", cmd.input))
 		}
 	}
 }
 
 func output(message string) {
-	fmt.Fprint(os.Stdout, message)
+	fmt.Fprint(os.Stdout, message+"\n")
 }
 
 func clean() {

@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+type Command struct {
+	input string
+	args  []string
+}
+
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
@@ -17,9 +22,13 @@ func main() {
 
 		cmd := getCmd(reader)
 
-		switch cmd {
+		switch cmd.input {
+		case "exit":
+			if cmd.args[0] == "0" {
+				os.Exit(0)
+			}
 		default:
-			output(fmt.Sprintf("%s: command not found\n", cmd))
+			output(fmt.Sprintf("%s: command not found\n", cmd.input))
 		}
 	}
 }
@@ -32,11 +41,21 @@ func clean() {
 	fmt.Fprint(os.Stdout, "$ ")
 }
 
-func getCmd(reader *bufio.Reader) string {
+func getCmd(reader *bufio.Reader) *Command {
 
 	// Wait for user input
 	input, _ := reader.ReadString('\n')
 
 	// Rimuove lo spazio finale
-	return strings.TrimSuffix(input, "\n")
+	arguments := strings.TrimSuffix(input, "\n")
+	splits := strings.Split(arguments, " ")
+
+	cmd := splits[0]
+
+	args := splits[1:]
+
+	return &Command{
+		cmd,
+		args,
+	}
 }

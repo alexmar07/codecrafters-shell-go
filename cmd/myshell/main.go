@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -12,5 +13,17 @@ func main() {
 	fmt.Fprint(os.Stdout, "$ ")
 
 	// Wait for user input
-	bufio.NewReader(os.Stdin).ReadString('\n')
+	input, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+
+	// Rimuove lo spazio finale
+	command := strings.TrimSuffix(input, "\n")
+
+	switch command {
+	default:
+		output(fmt.Sprintf("%s: command not found\n", command))
+	}
+}
+
+func output(message string) {
+	fmt.Fprint(os.Stdout, message)
 }

@@ -26,10 +26,20 @@ func main() {
 
 		cmd := getCmd(reader)
 
-		fn, err := k.Exec(cmd.input)
+		fn, err := k.GetFn(cmd.input)
 
 		if err != nil {
-			output(err.Error())
+
+			if _, ok := err.(*commands.NotFoundCmdError); ok {
+
+				if k.IsExternalCmd(cmd.input) {
+					k.Exec(cmd.input, cmd.args)
+					continue
+				}
+
+				output(err.Error())
+			}
+
 			continue
 		}
 

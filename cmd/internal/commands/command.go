@@ -29,7 +29,7 @@ func (k *Kernel) typer(args []string) {
 		os.Exit(1)
 	}
 
-	if k.existsCommand(args[0]) {
+	if k.isBuiltinCmd(args[0]) {
 		fmt.Printf("%s is a shell builtin\n", args[0])
 		return
 	}

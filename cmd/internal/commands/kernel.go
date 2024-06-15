@@ -1,6 +1,12 @@
 package commands
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+)
 
 type cmdFnc func([]string)
 
@@ -29,16 +35,41 @@ func (k *Kernel) registerCommand(cmd string, fn cmdFnc) {
 	k.commands[cmd] = fn
 }
 
-func (k *Kernel) existsCommand(cmd string) bool {
+func (k *Kernel) isBuiltinCmd(cmd string) bool {
 
 	_, ok := k.commands[cmd]
 
 	return ok
 }
 
-func (k *Kernel) Exec(cmd string) (cmdFnc, error) {
+func (k *Kernel) Exec(cmd string, args []string) {
+	extCmd := exec.Command(cmd, args...)
 
-	if !k.existsCommand(cmd) {
+	res, _ := extCmd.Output()
+	fmt.Print(string(res))
+}
+
+func (k *Kernel) IsExternalCmd(cmd string) bool {
+
+	paths := strings.Split(os.Getenv("PATH"), ":")
+
+	for _, path := range paths {
+
+		// Create paths with command
+		fp := filepath.Join(path, cmd)
+
+		// Search command
+		if _, err := os.Stat(fp); err == nil {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (k *Kernel) GetFn(cmd string) (cmdFnc, error) {
+
+	if !k.isBuiltinCmd(cmd) {
 		return nil, &NotFoundCmdError{cmd}
 	}
 

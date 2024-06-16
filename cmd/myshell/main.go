@@ -1,75 +1,36 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"strings"
-
-	"github.com/codecrafters-io/shell-starter-go/cmd/internal/commands"
+	"github.com/codecrafters-io/shell-starter-go/cmd/internal/console"
 )
-
-type Command struct {
-	input string
-	args  []string
-}
 
 func main() {
 
-	k := commands.NewKernel()
-
-	reader := bufio.NewReader(os.Stdin)
+	cli := console.NewCLI()
+	k := console.NewKernel()
 
 	for {
 
-		clean()
+		cli.Clean()
+		cli.GetInput()
 
-		cmd := getCmd(reader)
+		fn, err := k.GetFn(cli.GetCmd())
 
-		fn, err := k.GetFn(cmd.input)
-
-		if err != nil {
-
-			if _, ok := err.(*commands.NotFoundCmdError); ok {
-
-				if k.IsExternalCmd(cmd.input) {
-					k.Exec(cmd.input, cmd.args)
-					continue
-				}
-
-				output(err.Error())
-			}
-
+		if err == nil {
+			fn(cli.GetArgs())
 			continue
 		}
 
-		fn(cmd.args)
+		if _, ok := err.(*console.NotFoundCmdError); ok {
+
+			if !k.IsExternalCmd(cli.GetCmd()) {
+				cli.Output(err.Error())
+				continue
+			}
+
+			k.Exec(cli.GetCmd(), cli.GetArgs())
+		}
+
 	}
-}
 
-func output(message string) {
-	fmt.Fprint(os.Stdout, message+"\n")
-}
-
-func clean() {
-	fmt.Fprint(os.Stdout, "$ ")
-}
-
-func getCmd(reader *bufio.Reader) *Command {
-
-	// Wait for user input
-	input, _ := reader.ReadString('\n')
-
-	// Rimuove lo spazio finale
-	arguments := strings.TrimSuffix(input, "\n")
-	splits := strings.Split(arguments, " ")
-
-	cmd := splits[0]
-
-	args := splits[1:]
-
-	return &Command{
-		cmd,
-		args,
-	}
 }

@@ -1,4 +1,4 @@
-package commands
+package console
 
 import (
 	"fmt"
@@ -80,4 +80,5 @@ func (k *Kernel) Boot() {
 	k.registerCommand("exit", exit)
 	k.registerCommand("echo", echo)
 	k.registerCommand("type", k.typer)
+	k.registerCommand("cd", cd)
 }

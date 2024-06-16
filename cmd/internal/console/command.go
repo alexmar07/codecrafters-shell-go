@@ -1,4 +1,4 @@
-package commands
+package console
 
 import (
 	"fmt"
@@ -50,4 +50,34 @@ func (k *Kernel) typer(args []string) {
 	}
 
 	fmt.Printf("%s: not found\n", args[0])
+}
+
+func cd(args []string) {
+
+	homeDir, _ := os.UserHomeDir()
+
+	if len(args) == 0 {
+		os.Chdir(homeDir)
+		return
+	}
+
+	if args[0] == "~" {
+		os.Chdir(homeDir)
+		return
+	}
+
+	var path string
+
+	if strings.HasPrefix(args[0], "~") {
+		path = homeDir + strings.TrimPrefix(args[0], "~")
+	} else {
+		path = args[0]
+	}
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		fmt.Printf("cd: %s: No such file or directory\n", args[0])
+		return
+	}
+
+	os.Chdir(path)
 }
